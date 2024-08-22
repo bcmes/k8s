@@ -1,0 +1,33 @@
+kind: Deployment 
+apiVersion: apps/v1
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+spec:
+  selector:
+    matchLabels:
+      app: goserver
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: goserver
+          image: "wesleywillians/hello-go:v5.1"
+          envFrom:
+            - configMapRef:
+                name: goserver-env
+          volumeMounts: #monta o volume abaixo
+            - mountPath: "/go/myfamily" #quero que ele monte um volume neste enderećo do container
+              name: config #nome do volume a ser montado
+              readOnly: true #para garantir que os dados nao serao alterados
+      volumes: #declarando um volume para meu container com dados do configMap
+        - name: config # pode ser qualquer nome
+          configMap:
+            name: configmap-family #name do configMap
+            items:
+            - key: members #nome da variavel no configmap
+              path: "family.txt" #nome do arquivo que deve ser criado no container, pode ser qualquer nome

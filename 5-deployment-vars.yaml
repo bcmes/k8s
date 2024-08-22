@@ -1,0 +1,25 @@
+kind: Deployment # Ao realizar alteracoes aqui, ele ja deleta todos os pods e cria os novos, resolvendo o problema do replicaSet.
+apiVersion: apps/v1
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+spec:
+  selector:
+    matchLabels:
+      app: goserver
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: goserver
+          image: "wesleywillians/hello-go:v4"
+          env:
+            - name: NAME
+              value: "Bruno"
+            - name: AGE
+              value: "30"
+# As variaveis de ambiente acima sao consumidas pelo container "hello-go"

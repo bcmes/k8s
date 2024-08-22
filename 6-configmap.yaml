@@ -1,0 +1,8 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: goserver-env
+data:
+  NAME: "Bruno"
+  AGE: "30"
+# é preciso fazer o apply deste cara.: bs@pc:~/Documents/k8s$ kubectl apply -f 6-configmap.yaml 

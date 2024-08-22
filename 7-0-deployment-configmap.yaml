@@ -1,0 +1,33 @@
+kind: Deployment # Ao realizar alteracoes aqui, ele ja deleta todos os pods e cria os novos, resolvendo o problema do replicaSet.
+apiVersion: apps/v1
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+spec:
+  selector:
+    matchLabels:
+      app: goserver
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: goserver
+          image: "wesleywillians/hello-go:v4"
+          env:
+            - name: NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: goserver-env
+                  key: NAME
+            - name: AGE
+              valueFrom:
+                configMapKeyRef:
+                  name: goserver-env
+                  key: AGE
+# A diferenca aqui é que os valores vem de um arquivo separado chamado "6-configmap.yaml"
+# Se vc mudar algo no "6-configmap.yaml", vc precisa refazer o apply do "6-configmap.yaml" e o apply do "deployment", pois nao atualiza automaticamente.
+# Se quiser testar esse "deployment", precisa fazer o encaminhamento de porta..
