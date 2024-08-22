@@ -1,0 +1,21 @@
+kind: ReplicaSet
+apiVersion: apps/v1
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+spec:
+  selector:
+    matchLabels:
+      app: goserver
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: goserver
+          image: "wesleywillians/hello-go:latest" 
+# Quando vc altera apenas a imagem e dá um apply, a alteracao nao é aplicada.
+#   Para ser aplicada, vc deve deletar os pods.
