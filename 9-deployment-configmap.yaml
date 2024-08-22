@@ -29,5 +29,5 @@ spec:
           configMap:
             name: configmap-family #name do configMap
             items:
-            - key: members #nome da variavel no configmap
-              path: "family.txt" #nome do arquivo que deve ser criado no container, pode ser qualquer nome
+            - key: members #nome da variavel no configmap que quero pegar os valores
+              path: "family.txt" #nome do arquivo que deve ser criado no container, que contera os valores da variavel acima
