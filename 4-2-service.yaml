@@ -1,0 +1,20 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: goserver-service
+spec:
+  selector:
+    app: goserver
+  type: NodePort # Acessar o cluster de fora do kubernets
+  ports:
+  - name: goserver-service
+    port: 80 # a porta 80 deste service esta apontando para porta 80 do container docker(se nao houvesse targetPort definido). O port-forward se faz com essa porta aqui, <porta-de-escola:80>.
+    targetPort: 9000 # Este aqui indica a porta do container docker, util quando a porta do service é diferente da porta do container. Ou seja, Quando acessamos o o service na porta 80, ele redireciona para porta 9000 do container, e te responde na porta 80.
+    protocol: TCP
+    nodePort: 30001 # Se eu nao informar a porta, esse type geraria uma porta aleatoria.
+
+# Vc deve associar portas entre 30000 - 32767
+# A mesma porta definida é aberta em todos os nodes
+# Qualquer um que souber o IP do node e usar essa porta, sera direcionado para a porta do service, que direciona para a porta do container.
+# Nao usamos esse recurso para colocar em producao, é mais para testes.
+# Ao acessar Ip-Node:30001 sera redirecionado para porta 80 do service que redirecionará para porta 9000 do container.
