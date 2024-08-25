@@ -1,0 +1,43 @@
+kind: Deployment 
+apiVersion: apps/v1
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+spec:
+  selector:
+    matchLabels:
+      app: goserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: goserver
+          image: "brunomeloesilva/hello-go:v5.3"
+          envFrom:
+            - configMapRef:
+                name: goserver-env
+            - secretRef:
+                name: goserver-secret
+          volumeMounts: 
+            - mountPath: "/go/myfamily" 
+              name: config 
+              readOnly: true 
+      volumes: 
+        - name: config 
+          configMap:
+            name: configmap-family 
+            items:
+            - key: members 
+              path: "family.txt"
+
+# $ kubectl delete deploy goserver
+# $ kubectl apply -f 12-deployment-to-health.yaml
+# (executei varias vezes até ver que estava roando..) $ kubectl get po
+    #OU: $ kubectl apply -f 12-deployment-to-health.yaml && watch -n1 kubectl get po
+# $ kubectl port-forward svc/goserver-service 9000:80
+
+# $ curl http://localhost:9000/healthz
