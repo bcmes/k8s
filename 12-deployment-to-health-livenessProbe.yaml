@@ -1,0 +1,56 @@
+kind: Deployment 
+apiVersion: apps/v1
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+spec:
+  selector:
+    matchLabels:
+      app: goserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: goserver
+          image: "brunomeloesilva/hello-go:v5.3"
+          livenessProbe: #Verifica se seu container está rodando/vivo, se nao tiver, recria.: 3 tipos: request http, command no container, tcp para estabelecer conexao
+            httpGet:
+              path: /healthz #Esse é o end-point que ele vai chamar
+              port: 8000 #porta do container
+            periodSeconds: 5 #de quanto em quanto tempo ele faz a verificacao, em segundos
+            failureThreshold: 1 #Quantas vezes tem de falhar antes de reiniciar o container
+            timeoutSeconds: 2 #O tempo de espera da resposta da requisicao "GET /healthz" acima. Se nao consequir completar a requisicao no tempo estabelecido, conta uma failureThreshold
+            successThreshold: 1 #Quando testes tem de retornar sucesso, para ele saber que a app está OK
+          envFrom:
+            - configMapRef:
+                name: goserver-env
+            - secretRef:
+                name: goserver-secret
+          volumeMounts: 
+            - mountPath: "/go/myfamily" 
+              name: config 
+              readOnly: true 
+      volumes: 
+        - name: config 
+          configMap:
+            name: configmap-family 
+            items:
+            - key: members 
+              path: "family.txt"
+
+# $ kubectl delete deploy goserver
+# $ kubectl apply -f 12-deployment-to-health.yaml
+# (executei varias vezes até ver que estava roando..) $ kubectl get po
+    #OU: $ kubectl apply -f 12-deployment-to-health.yaml && watch -n1 kubectl get po
+
+# FIZ ESTE TESTE ANTES DE CONFIGURAR O livenessProbe:
+# $ kubectl port-forward svc/goserver-service 9000:80
+# $ curl http://localhost:9000/healthz
+
+# DEPOIS DE CONFIGURAR O livenessProbe:
+# - Após realizar o appy no deployment, observei os RESTARTS automaticos a cada 25segundos, conforme definido no server.go
+# - Se vc descrever o pod ($ kubectl describe pod goserver-6c86598c66-hcnsc) vera em "Events" o historico de subidas e decidas do Pod.

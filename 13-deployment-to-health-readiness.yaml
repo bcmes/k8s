@@ -16,7 +16,14 @@ spec:
     spec:
       containers:
         - name: goserver
-          image: "brunomeloesilva/hello-go:v5.3"
+          image: "brunomeloesilva/hello-go:v5.4"
+          readinessProbe: #Verifica quando a app esta pronta para receber trafego
+            httpGet:
+              path: /healthz #Esse é o end-point que ele vai chamar
+              port: 8000 #porta do container
+            periodSeconds: 3 #de quanto em quanto tempo ele faz a verificacao, em segundos
+            failureThreshold: 1 #Quantas vezes tem de falhar ...
+            initialDelaySeconds: 10 #Aguarda 10 segundos antes de iniciar as verificacoes do readinessProbe
           envFrom:
             - configMapRef:
                 name: goserver-env
@@ -34,10 +41,6 @@ spec:
             - key: members 
               path: "family.txt"
 
-# $ kubectl delete deploy goserver
-# $ kubectl apply -f 12-deployment-to-health.yaml
-# (executei varias vezes até ver que estava roando..) $ kubectl get po
-    #OU: $ kubectl apply -f 12-deployment-to-health.yaml && watch -n1 kubectl get po
-# $ kubectl port-forward svc/goserver-service 9000:80
-
-# $ curl http://localhost:9000/healthz
+# $ docker build -t brunomeloesilva/hello-go:v5.4 .
+# $ docker push brunomeloesilva/hello-go:v5.4
+# $ kubectl apply -f 13-deployment-to-health-readiness.yaml && watch -n1 kubectl get po
