@@ -1,0 +1,19 @@
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v1
+metadata:
+  name: goserver-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: goserver
+  minReplicas: 1
+  maxReplicas: 3 #nunca cria mais replicas que isso
+  targetCPUUtilizationPercentage: 30 #Quando chegar em 30% do consumo de CPU, ele scale up, mesmo de 30% scale down.
+
+# $ kubectl apply -f 18.hpa.yaml 
+
+# ver o HPA em execućão:
+# bs@pc:~/Documents/k8s$ kubectl get hpa
+# NAME           REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+# goserver-hpa   Deployment/goserver   cpu: 1%/30%   1         3         1          18s

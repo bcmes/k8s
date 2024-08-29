@@ -1,0 +1,12 @@
+# HPA - Horizontal Pod AutoScale
+# - Precisa de um Metric Server para funcionar.
+# - No cloud já vem junto com k8s
+# - Localmente, no kind, vamos ter de instalar o metric server.
+# - Usaremos: https://github.com/kubernetes-sigs/metrics-server
+# - Comandos:
+# - Baixei o components.yaml: $ wget https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+# - renomeei para metrics-server.yaml
+# - alterei o "metrics-server.yaml" conforme a issue: https://github.com/kubernetes-sigs/metrics-server/issues/525
+#     - Na linha 139 adicionei "- --kubelet-insecure-tls"
+# - Apliquei o metrics: $ kubectl apply -f metrics-server.yaml 
+# - Listei os servićos da api, para ver o metrics rodando: $ kubectl get apiservices
