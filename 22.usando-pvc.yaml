@@ -1,4 +1,4 @@
-kind: Deployment 
+kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: goserver
@@ -12,58 +12,59 @@ spec:
   template:
     metadata:
       labels:
-        app: "goserver"
+        app: goserver
     spec:
       containers:
         - name: goserver
-          image: "brunomeloesilva/hello-go:v9.6"
-          resources: #Delimitando recursos por pod
-            requests: #o minimo desejado
-              cpu: 100m #vou usar 100milicore
-              memory: 20Mi #20megas
-            limits: #maximo de recurso determinado
-              cpu: 500m 
-              memory: 25Mi 
-          startupProbe: 
+          image: 'brunomeloesilva/hello-go:v9.6'
+          resources:
+            requests:
+              cpu: "0.05"
+              memory: 20Mi
+            limits:
+              cpu: "0.05"
+              memory: 25Mi
+          startupProbe:
             httpGet:
               path: /healthz
-              port: 8000 
-            periodSeconds: 3 
-            failureThreshold: 5
-          readinessProbe: 
+              port: 8000
+            periodSeconds: 4
+            failureThreshold: 30
+          readinessProbe:
             httpGet:
               path: /healthz
-              port: 8000 
-            periodSeconds: 3 
-            failureThreshold: 1 
-          livenessProbe: 
+              port: 8000
+            periodSeconds: 3
+            failureThreshold: 1
+          livenessProbe:
             httpGet:
-              path: /healthz 
-              port: 8000 
-            periodSeconds: 5 
-            failureThreshold: 1 
-            timeoutSeconds: 1 
-            successThreshold: 1 
+              path: /healthz
+              port: 8000
+            periodSeconds: 5
+            failureThreshold: 1
+            timeoutSeconds: 1
+            successThreshold: 1
           envFrom:
             - configMapRef:
                 name: goserver-env
             - secretRef:
                 name: goserver-secret
-          volumeMounts: 
-            - mountPath: "/go/myfamily" 
-              name: config 
-              readOnly: true 
-            - mountPath: "/go/pvc" 
-              name: goserver-volume #bind com o pvc criado
-      volumes: 
-        - name: goserver-volume #bind com o pvc criado
-          persistentColumeClaim:
+          volumeMounts:
+            - mountPath: "/go/myfamily"
+              name: config
+              readOnly: true
+            - mountPath: "/go/pvc" #Aqui
+              name: goserver-volume
+      volumes:
+        - name: goserver-volume #Aqui
+          persistentVolumeClaim:
             claimName: goserver-pvc
-        - name: config 
+        - name: config
           configMap:
-            name: configmap-family 
+            name: configmap-family
             items:
-            - key: members 
-              path: "family.txt"
+              - key: members
+                path: family.txt
 
-
+# bs@pc:~/Documents/k8s$ kubectl apply -f 22.usando-pvc.yaml 
+# deployment.apps/goserver configured
