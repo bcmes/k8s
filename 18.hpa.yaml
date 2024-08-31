@@ -1,4 +1,4 @@
-kind: HorizontalPodAutoscaler
+kind: HorizontalPodAutoscaler #Para este funcionar, a coleta de metricas, metrics-server, tem que estar rodando..
 apiVersion: autoscaling/v1
 metadata:
   name: goserver-hpa

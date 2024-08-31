@@ -1,0 +1,17 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: goserver-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+# bs@pc:~/Documents/k8s$ kubectl apply -f 21-pvc.yaml 
+# persistentvolumeclaim/goserver-pvc created
+
+# bs@pc:~/Documents/k8s$ kubectl get pvc
+# NAME           STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+# goserver-pvc   Pending                                      standard       <unset>                 3m15s

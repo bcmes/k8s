@@ -1,0 +1,66 @@
+kind: Deployment 
+apiVersion: apps/v1
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+spec:
+  selector:
+    matchLabels:
+      app: goserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: goserver
+          image: "brunomeloesilva/hello-go:v9.6"
+          resources: #Delimitando recursos por pod
+            requests: #o minimo desejado
+              cpu: 100m #vou usar 100milicore
+              memory: 20Mi #20megas
+            limits: #maximo de recurso determinado
+              cpu: 500m 
+              memory: 25Mi 
+          startupProbe: 
+            httpGet:
+              path: /healthz
+              port: 8000 
+            periodSeconds: 3 
+            failureThreshold: 5
+          readinessProbe: 
+            httpGet:
+              path: /healthz
+              port: 8000 
+            periodSeconds: 3 
+            failureThreshold: 1 
+          livenessProbe: 
+            httpGet:
+              path: /healthz 
+              port: 8000 
+            periodSeconds: 5 
+            failureThreshold: 1 
+            timeoutSeconds: 1 
+            successThreshold: 1 
+          envFrom:
+            - configMapRef:
+                name: goserver-env
+            - secretRef:
+                name: goserver-secret
+          volumeMounts: 
+            - mountPath: "/go/myfamily" 
+              name: config 
+              readOnly: true 
+      volumes: 
+        - name: config 
+          configMap:
+            name: configmap-family 
+            items:
+            - key: members 
+              path: "family.txt"
+
+# $ kubectl apply -f 19.teste-hpa.yaml
+# $ kubectl run -it fortio --rm --image=fortio/fortio -- load -qps 800 -t 120s -c 70 "http://goserver-service/healthz"
+# $ watch -n1 kubectl get hpa

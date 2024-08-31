@@ -1,0 +1,21 @@
+kind: PersistentVolume #cria e reserva um espaco no node
+apiVersion: v1
+metadata:
+  name: pv1
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteOnce #o pod, pode ler, escrever, desde que esteja no mesmo node.
+
+# Esse cara aqui que gera nosso volume persistente:
+# bs@pc:~/Documents/k8s$ kubectl get storageclass
+# NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+# standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  11d
+
+# bs@pc:~/Documents/k8s$ kubectl config get-contexts
+# CURRENT   NAME             CLUSTER          AUTHINFO         NAMESPACE
+# *         kind-fullcycle   kind-fullcycle   kind-fullcycle  
+
+# Se eu tivesse mais de um contexto e precisasse mudar:
+# bs@pc:~/Documents/k8s$ kubectl config use-context kind-fullcycle
