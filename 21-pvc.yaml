@@ -4,7 +4,7 @@ metadata:
   name: goserver-pvc
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteOnce #Somente os pods deste node, terão acesso ao volume
   resources:
     requests:
       storage: 5Gi

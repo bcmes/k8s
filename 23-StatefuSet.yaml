@@ -1,0 +1,44 @@
+kind: StatefulSet # É um Deployment com caracteristicas de subir/matar os pods em ordem, etc..
+apiVersion: apps/v1
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  serviceName: mysql-h
+  # podManagementPolicy: Parallel #criar os pods de maineira paralela
+  replicas: 3 #Devido o Parallel comentei esse aqui
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+          # volumeMounts:
+          #   - mountPath: /var/lib/mysql
+          #     name: mysql-volume
+
+# bs@pc:~/Documents/k8s$ kubectl apply -f 23-StatefuSet.yaml 
+# statefulset.apps/mysql created
+
+# bs@pc:~/Documents/k8s$ kubectl get pods
+# NAME                        READY   STATUS    RESTARTS   AGE
+# goserver-6cdf8b9754-llllx   1/1     Running   0          80m
+# mysql-0                     1/1     Running   0          2m40s
+# mysql-1                     1/1     Running   0          2m
+# mysql-2                     1/1     Running   0          84s
+
+# bs@pc:~/Documents/k8s$ kubectl delete statefulset mysql
+# statefulset.apps "mysql" deleted
+
+# Scale manual:
+# bs@pc:~/Documents/k8s$ kubectl scale statefulset mysql --replicas=5
+# statefulset.apps/mysql scaled

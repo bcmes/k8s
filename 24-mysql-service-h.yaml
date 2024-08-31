@@ -1,0 +1,47 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysql-h # tem de ser o mesmo "serviceName: mysql-h" do "23-StatefuSet.yaml"
+spec:
+  selector:
+    app: mysql
+  ports:
+    - port: 3306
+  clusterIP: None #Nao vai trabalhar com IP e sim com DNS, pelo serviceName do "StatefulSet"
+
+# Isso acima é um headless service !
+
+# bs@pc:~/Documents/k8s$ kubectl apply -f 23-StatefuSet.yaml 
+# statefulset.apps/mysql created
+
+# bs@pc:~/Documents/k8s$ kubectl apply -f 24-mysql-service-h.yaml 
+# service/mysql-h created
+
+# bs@pc:~/Documents/k8s$ kubectl get svc
+# NAME               TYPE           CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
+# goserver-service   LoadBalancer   10.96.50.73   <pending>     80:31154/TCP   9d
+# kubernetes         ClusterIP      10.96.0.1     <none>        443/TCP        11d
+# mysql-h            ClusterIP      None          <none>        3306/TCP       53s
+
+# bs@pc:~/Documents/k8s$ kubectl get pods
+# NAME                        READY   STATUS    RESTARTS   AGE
+# goserver-6cdf8b9754-llllx   1/1     Running   0          159m
+# mysql-0                     1/1     Running   0          11m
+# mysql-1                     1/1     Running   0          10m
+# mysql-2                     1/1     Running   0          10m
+
+# bs@pc:~/Documents/k8s$ kubectl exec -it goserver-6cdf8b9754-llllx -- bash
+# root@goserver-6cdf8b9754-llllx:/go# 
+
+# root@goserver-6cdf8b9754-llllx:/go# ping mysql-h
+# PING mysql-h.default.svc.cluster.local (10.244.3.13) 56(84) bytes of data.
+# 64 bytes from mysql-1.mysql-h.default.svc.cluster.local (10.244.3.13): icmp_seq=1 ttl=63 time=0.032 ms
+# 64 bytes from mysql-1.mysql-h.default.svc.cluster.local (10.244.3.13): icmp_seq=2 ttl=63 time=0.023 ms
+
+# root@goserver-6cdf8b9754-llllx:/go# ping mysql-0.mysql-h
+# PING mysql-0.mysql-h.default.svc.cluster.local (10.244.1.8) 56(84) bytes of data.
+# 64 bytes from mysql-0.mysql-h.default.svc.cluster.local (10.244.1.8): icmp_seq=1 ttl=62 time=0.054 ms
+# 64 bytes from mysql-0.mysql-h.default.svc.cluster.local (10.244.1.8): icmp_seq=2 ttl=62 time=0.066 ms
+# 64 bytes from mysql-0.mysql-h.default.svc.cluster.local (10.244.1.8): icmp_seq=3 ttl=62 time=0.048 ms
+
+# Eu consigo baseado no nome, chamar o POD que eu quero. Como se fosse apontamento dinamico de DNS.

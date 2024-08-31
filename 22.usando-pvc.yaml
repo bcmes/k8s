@@ -68,3 +68,17 @@ spec:
 
 # bs@pc:~/Documents/k8s$ kubectl apply -f 22.usando-pvc.yaml 
 # deployment.apps/goserver configured
+
+# bs@pc:~/Documents/k8s$ kubectl get pvc
+# NAME           STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+# goserver-pvc   Bound    pvc-346ec1fc-18fd-4dc0-9d91-b48b3d4e98a7   5Gi        RWO            standard       <unset>                 57m
+
+# bs@pc:~/Documents/k8s$ kubectl get pods
+# NAME                        READY   STATUS    RESTARTS   AGE
+# goserver-6cdf8b9754-llllx   1/1     Running   0          5m24s
+
+# bs@pc:~/Documents/k8s$ kubectl exec -it goserver-6cdf8b9754-llllx -- bash
+# root@goserver-6cdf8b9754-llllx:/go#
+
+# root@goserver-6cdf8b9754-llllx:/go# ls *c 
+# pvc:
