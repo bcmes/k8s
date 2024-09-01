@@ -1,0 +1,58 @@
+kind: StatefulSet # É um Deployment com caracteristicas de subir/matar os pods em ordem, etc..
+apiVersion: apps/v1
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  serviceName: mysql-h
+  # podManagementPolicy: Parallel #criar os pods de maineira paralela
+  replicas: 3 #Devido o Parallel comentei esse aqui
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-volume
+  volumeClaimTemplates: #faz para cada nova replica. Cria um volume para cada replica.
+  - metadata:
+      name: mysql-volume
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi
+
+# bs@pc:~/Documents/k8s$ kubectl delete statefulset mysql
+# statefulset.apps "mysql" deleted
+
+# bs@pc:~/Documents/k8s$ kubectl apply -f 25-StatefuSet.yaml 
+# statefulset.apps/mysql created
+
+# bs@pc:~/Documents/k8s$ kubectl get pods
+# NAME                        READY   STATUS    RESTARTS   AGE
+# goserver-6cdf8b9754-llllx   1/1     Running   0          10h
+# mysql-0                     1/1     Running   0          27s
+# mysql-1                     1/1     Running   0          21s
+# mysql-2                     1/1     Running   0          14s
+
+#Veja que criou um volume para cada pod.:
+# bs@pc:~/Documents/k8s$ kubectl get pvc
+# NAME                   STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+# goserver-pvc           Bound    pvc-346ec1fc-18fd-4dc0-9d91-b48b3d4e98a7   5Gi        RWO            standard       <unset>                 10h
+# mysql-volume-mysql-0   Bound    pvc-33330070-4b58-4c0c-9cb7-34b5ecc9e5e3   5Gi        RWO            standard       <unset>                 69s
+# mysql-volume-mysql-1   Bound    pvc-54743013-bfd4-40d2-8324-cd5b238bbf31   5Gi        RWO            standard       <unset>                 63s
+# mysql-volume-mysql-2   Bound    pvc-e96a748f-d598-42d8-bc15-dfd2dc0a6c1b   5Gi        RWO            standard       <unset>                 56s
+
