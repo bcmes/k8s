@@ -1,0 +1,182 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+      - name: server
+        image: wesleywillians/hello-express
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3000
+
+# Criando o recurso no namespace corrent
+#
+# bs@pc:~/Documents/k8s$ kubectl apply -f 27-contextos-namespaces.yaml 
+# deployment.apps/server created
+
+
+# bs@pc:~/Documents/k8s$ kubectl get po
+# NAME                        READY   STATUS    RESTARTS   AGE
+# server-7f747864df-fd7gf     1/1     Running   0          17m
+
+
+# Criando o recurso no namespace de dev
+#
+# bs@pc:~/Documents/k8s$ kubectl apply -f 27-contextos-namespaces.yaml -n=dev
+# deployment.apps/server created
+
+
+# bs@pc:~/Documents/k8s$ kubectl create namespace prod
+# namespace/prod created
+
+
+# bs@pc:~/Documents/k8s$ kubectl apply -f 27-contextos-namespaces.yaml -n=prod
+# deployment.apps/server created
+
+
+# bs@pc:~/Documents/k8s$ kubectl get pods -n=dev
+# NAME                      READY   STATUS    RESTARTS   AGE
+# server-7f747864df-tjpm9   1/1     Running   0          5m5s
+# bs@pc:~/Documents/k8s$ kubectl get pods -n=prod
+# NAME                      READY   STATUS              RESTARTS   AGE
+# server-7f747864df-tz9hj   0/1     ContainerCreating   0          52s
+
+
+# - Filtrando pods por label
+#
+# bs@pc:~/Documents/k8s$ kubectl get pods -l app=server
+# NAME                      READY   STATUS    RESTARTS   AGE
+# server-7f747864df-fd7gf   1/1     Running   0          28m
+
+# Arquivo de configuracões do kubernets.:
+#
+# bs@pc:~/Documents/k8s$ cat ~/.kube/config 
+# apiVersion: v1
+# clusters:
+# - cluster:
+#     certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWU......
+#     server: https://127.0.0.1:34001
+#   name: kind-fullcycle
+# contexts:
+# - context:
+#     cluster: kind-fullcycle
+#     user: kind-fullcycle
+#   name: kind-fullcycle
+# current-context: kind-fullcycle
+# kind: Config
+# preferences: {}
+# users:
+# - name: kind-fullcycle
+#   user:
+#     client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FUR.....
+#     client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktL.....
+
+
+# Ver configuraćões do kubernets.:
+#
+# bs@pc:~/Documents/k8s$ kubectl config view
+# apiVersion: v1
+# clusters:
+# - cluster:
+#     certificate-authority-data: DATA+OMITTED
+#     server: https://127.0.0.1:34001
+#   name: kind-fullcycle
+# contexts:
+# - context:
+#     cluster: kind-fullcycle
+#     user: kind-fullcycle
+#   name: kind-fullcycle
+# current-context: kind-fullcycle
+# kind: Config
+# preferences: {}
+# users:
+# - name: kind-fullcycle
+#   user:
+#     client-certificate-data: DATA+OMITTED
+#     client-key-data: DATA+OMITTED
+
+
+# Vendo contexto atual.:
+#
+# bs@pc:~/Documents/k8s$ kubectl config current-context
+# kind-fullcycle
+
+
+# Criando novos contextos no meu arquivo de configuracoes do kubernets.:
+#
+# bs@pc:~/Documents/k8s$ kubectl config set-context dev --namespace=dev --cluster=kind-fullcycle --user=kind-fullcycle
+# Context "dev" created.
+#
+# bs@pc:~/Documents/k8s$ kubectl config set-context prod --namespace=prod --cluster=kind-fullcycle --user=kind-fullcycle
+# Context "prod" created.
+
+
+# Veja os novos contextos criados no arquivo de configuracao.:
+#
+# bs@pc:~/Documents/k8s$ kubectl config view
+# apiVersion: v1
+# clusters:
+# - cluster:
+#     certificate-authority-data: DATA+OMITTED
+#     server: https://127.0.0.1:34001
+#   name: kind-fullcycle
+# contexts:
+# - context:
+#     cluster: kind-fullcycle
+#     namespace: dev
+#     user: kind-fullcycle
+#   name: dev
+# - context:
+#     cluster: kind-fullcycle
+#     user: kind-fullcycle
+#   name: kind-fullcycle
+# - context:
+#     cluster: kind-fullcycle
+#     namespace: prod
+#     user: kind-fullcycle
+#   name: prod
+# current-context: kind-fullcycle
+# kind: Config
+# preferences: {}
+# users:
+# - name: kind-fullcycle
+#   user:
+#     client-certificate-data: DATA+OMITTED
+#     client-key-data: DATA+OMITTED
+
+
+# Agora vc pode escolher o contexto que deseja trabalhar.:
+#
+# bs@pc:~/Documents/k8s$ kubectl config use-context dev
+# Switched to context "dev".
+
+
+# A partir de agora, todos os comandos sao aplicados neste contexto.
+#
+# bs@pc:~/Documents/k8s$ kubectl config current-context
+# dev
+
+
+# Veja que quando nao especificado, o contexto é o de dev.:
+#
+# bs@pc:~/Documents/k8s$ kubectl delete deployment server -n=default
+# deployment.apps "server" deleted
+#
+# bs@pc:~/Documents/k8s$ kubectl delete deployment server -n=prod
+# deployment.apps "server" deleted
+#
+# bs@pc:~/Documents/k8s$ kubectl get pods
+# NAME                      READY   STATUS    RESTARTS   AGE
+# server-7f747864df-tjpm9   1/1     Running   0          32m

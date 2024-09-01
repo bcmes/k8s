@@ -1,0 +1,45 @@
+# # NameSpace são separacões lógicas de recursos.
+# - Sempre que instalamos alguma coisa, instalamos dentro de um NameSpace
+# - Se vc nao informar o NameSpace é usado o default
+# - Posso setar recursos por NameSpace
+# - É melhor ter um cluster para o ambiente de dev e outro para de prod. Mas pode faezer com NameSpace.
+
+# - Listando Namespaces
+#
+# bs@pc:~/Documents/k8s$ kubectl get ns
+# NAME                 STATUS   AGE
+# default              Active   12d
+# kube-node-lease      Active   12d
+# kube-public          Active   12d
+# kube-system          Active   12d
+# local-path-storage   Active   12d
+
+# - Listando os pods de um namespace, esse -n é de namespace.:
+#
+# bs@pc:~/Documents/k8s$ kubectl get pods -n=kube-system
+# NAME                                              READY   STATUS    RESTARTS        AGE
+# coredns-6f6b679f8f-ctjsx                          1/1     Running   1 (8d ago)      12d
+# coredns-6f6b679f8f-j4wf4                          1/1     Running   1 (8d ago)      12d
+# etcd-fullcycle-control-plane                      1/1     Running   1 (8d ago)      12d
+# kindnet-4t42n                                     1/1     Running   1 (8d ago)      12d
+# kindnet-8thz5                                     1/1     Running   1 (8d ago)      12d
+# kindnet-cfn2m                                     1/1     Running   1 (8d ago)      12d
+# kindnet-l9qvn                                     1/1     Running   1 (8d ago)      12d
+# kube-apiserver-fullcycle-control-plane            1/1     Running   1 (8d ago)      12d
+# kube-controller-manager-fullcycle-control-plane   1/1     Running   3 (6d20h ago)   12d
+# kube-proxy-7gmc7                                  1/1     Running   1 (8d ago)      12d
+# kube-proxy-gnf2p                                  1/1     Running   1 (8d ago)      12d
+# kube-proxy-kjzlz                                  1/1     Running   60 (8d ago)     12d
+# kube-proxy-tknc5                                  1/1     Running   1 (8d ago)      12d
+# kube-scheduler-fullcycle-control-plane            1/1     Running   1 (8d ago)      12d
+# metrics-server-75ccb78d49-hmfsz                   1/1     Running   0               3d13h
+
+# - Criando um namespace.:
+#
+# bs@pc:~/Documents/k8s$ kubectl create ns dev
+# namespace/dev created
+
+
+# - Aplicando recursos em um NameSpace especifico. Poderia especificar o namespace no deployment.yaml tambem.
+#
+# bs@pc:~/Documents/k8s$ kubectl apply -f file.yaml -n=dev

@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      serviceAccount: server
+      containers:
+      - name: server
+        image: wesleywillians/hello-express
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3000
+
+# Aplicando deploy com o service especifico. Veja linha 14.
+#
+# bs@pc:~/Documents/k8s$ kubectl apply -f 30-deployment.yaml 
+# deployment.apps/server configured
+
+
+# Veja se o service especifico foi aplicado no deployment.:
+# bs@pc:~/Documents/k8s$ kubectl get pods
+# NAME                      READY   STATUS    RESTARTS   AGE
+# server-59874f9f4f-xlqs6   1/1     Running   0          54s
+#
+# bs@pc:~/Documents/k8s$ kubectl describe pod server-59874f9f4f-xlqs6
+# Name:             server-59874f9f4f-xlqs6
+# Namespace:        dev
+# Priority:         0
+# Service Account:  server
+# Node:             fullcycle-worker2/172.20.0.4
+# Start Time:       Sun, 01 Sep 2024 13:42:20 -0400
+# Labels:           app=server
+#                   pod-template-hash=59874f9f4f
+# Annotations:      <none>
+# Status:           Running
+# IP:               10.244.1.12
+# IPs:
+#   IP:           10.244.1.12
+# Controlled By:  ReplicaSet/server-59874f9f4f
+# Containers:
+#   server:
+#     Container ID:   containerd://5a729e80075bcafad8cbe9a5df5a6cdd0fe861562b27bd16bd2574701be6862a
+#     Image:          wesleywillians/hello-express
+#     Image ID:       docker.io/wesleywillians/hello-express@sha256:2a4823a1ac58e9946e52aca336dc3cd5e5bfb73f7b318a1364c8da2b64d00223
+#     Port:           3000/TCP
+#     Host Port:      0/TCP
+#     State:          Running
+#       Started:      Sun, 01 Sep 2024 13:42:23 -0400
+#     Ready:          True
+#     Restart Count:  0
+#     Limits:
+#       cpu:     500m
+#       memory:  128Mi
+#     Requests:
+#       cpu:        500m
+#       memory:     128Mi
+#     Environment:  <none>
+#     Mounts:
+#       /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-thd9l (ro)
+# Conditions:
+#   Type                        Status
+#   PodReadyToStartContainers   True 
+#   Initialized                 True 
+#   Ready                       True 
+#   ContainersReady             True 
+#   PodScheduled                True 
+# Volumes:
+#   kube-api-access-thd9l:
+#     Type:                    Projected (a volume that contains injected data from multiple sources)
+#     TokenExpirationSeconds:  3607
+#     ConfigMapName:           kube-root-ca.crt
+#     ConfigMapOptional:       <nil>
+#     DownwardAPI:             true
+# QoS Class:                   Guaranteed
+# Node-Selectors:              <none>
+# Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+#                              node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+# Events:
+#   Type    Reason     Age   From               Message
+#   ----    ------     ----  ----               -------
+#   Normal  Scheduled  78s   default-scheduler  Successfully assigned dev/server-59874f9f4f-xlqs6 to fullcycle-worker2
+#   Normal  Pulling    78s   kubelet            Pulling image "wesleywillians/hello-express"
+#   Normal  Pulled     76s   kubelet            Successfully pulled image "wesleywillians/hello-express" in 1.913s (1.913s including waiting). Image size: 361208306 bytes.
+#   Normal  Created    76s   kubelet            Created container server
+#   Normal  Started    76s   kubelet            Started container server
