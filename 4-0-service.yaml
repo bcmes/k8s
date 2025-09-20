@@ -4,8 +4,8 @@ metadata:
   name: goserver-service
 spec:
   selector:
-    app: goserver
-  type: ClusterIP
+    app: goserver # indica a quais pods este service esta associado (dizem que este veio do deployment/spec.selector.matchLabels.app, num sei nao)
+  type: ClusterIP 
   ports:
   - name: goserver-service
     port: 80 # a porta 80 deste service esta apontando para porta 80 do container docker
