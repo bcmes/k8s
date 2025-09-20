@@ -4,12 +4,12 @@ metadata:
   name: goserver
   labels:
     app: goserver
-spec:
+spec: # definicao do replicaset
   selector:
     matchLabels:
       app: goserver
   replicas: 2
-  template:
+  template: # definicao do template do pod
     metadata:
       labels:
         app: "goserver"
