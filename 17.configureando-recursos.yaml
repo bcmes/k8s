@@ -21,7 +21,7 @@ spec:
             requests: #o minimo desejado
               cpu: 100m #vou usar 100milicore
               memory: 20Mi #20megas
-            limits: #maximo de recurso determinado
+            limits: #maximo de recurso determinado. No meu entendimento o minimo e maximo deveriam ser setados com valores iguais, já que está revercado para ele mesmo.
               cpu: 500m 
               memory: 25Mi 
           startupProbe: 
