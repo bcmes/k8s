@@ -23,7 +23,7 @@ spec:
               port: 8000 
             periodSeconds: 3 
             failureThreshold: 1 
-            initialDelaySeconds: 10 
+            initialDelaySeconds: 10 # via de regra, deveria ter um valor menor que o initialDelaySeconds do livenessProbe, essa estrategia de valores iguais é arriscado.
           livenessProbe: #(Responsabilidade de Recriar o processo. So ele reinicia!) ERROR: Quando o livenessProbe checa, a cada 5s, a aplicacão ainda não está pronta então ele reinicia os pods. E ficará em um looping de erro eterno devido o "initialDelaySeconds: 10" acima.
             httpGet:
               path: /healthz 
@@ -53,3 +53,8 @@ spec:
 # $ docker build -t brunomeloesilva/hello-go:v5.4 .
 # $ docker push brunomeloesilva/hello-go:v5.4
 # $ kubectl apply -f 13-deployment-to-health-readiness.yaml && watch -n1 kubectl get po
+
+# Se o livenessProbe tivesse o initialDelaySeconds: 30, e o readinessProbe 10s:
+# readiness já começa a checar aos 10s → o pod começa a receber tráfego assim que estiver pronto.
+# liveness só começa aos 30s → evita matar o container durante o boot.
+
