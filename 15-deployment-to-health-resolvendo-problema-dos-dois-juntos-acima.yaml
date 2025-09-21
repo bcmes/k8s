@@ -21,8 +21,8 @@ spec:
             httpGet:
               path: /healthz
               port: 8000 
-            periodSeconds: 3 
-            failureThreshold: 5
+            periodSeconds: 3 #faz uma checagem a cada 3s
+            failureThreshold: 5 #se falhar por 5x no intervalo de 3s, ele desiste e dá falha !
           readinessProbe: 
             httpGet:
               path: /healthz
