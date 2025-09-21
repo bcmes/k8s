@@ -19,7 +19,7 @@ spec:
           image: "brunomeloesilva/hello-go:v5.3"
           livenessProbe: #Verifica se seu container está rodando/vivo, se nao tiver, recria.: 3 tipos: request http, command no container, tcp para estabelecer conexao
             httpGet:
-              path: /healthz #Esse é o end-point que ele vai chamar
+              path: /healthz #Esse é o end-point que ele vai chamar. Somente o status code importa para o Kubernetes.
               port: 8000 #porta do container
             periodSeconds: 5 #de quanto em quanto tempo ele faz a verificacao, em segundos
             failureThreshold: 1 #Quantas vezes tem de falhar antes de reiniciar o container
