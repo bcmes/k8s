@@ -9,7 +9,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole 
 metadata:
   name: server-read
-rules:
+rules: # as opcoes que foram liberadas aqui, pode ser vista no menu de opcoes,  `kubectl api-resources`
 - apiGroups: [""]
   resources: ["pods","services"]
   verbs: ["get","watch","list"]
